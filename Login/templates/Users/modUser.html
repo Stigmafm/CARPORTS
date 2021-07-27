@@ -1,0 +1,169 @@
+{% extends 'Base/base.html' %} {% load static %} 
+{% block title %} Modificar Usuarios {% endblock %} 
+
+{% block extrahead %}
+
+<!-- <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}"> -->
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+    <style>
+        .warn {
+            border: 2px solid orange;
+        }
+    </style>
+{% endblock extrahead%}
+
+{% block content %}
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="titlesTemplates">Usuarios <small>Modificar</small></h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/index/">Home</a></li>
+                        <li class="breadcrumb-item "><a href="/users/">Usuarios</a></li>
+                        <li class="breadcrumb-item active">Modificar</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <section class="content col-lg-9 col-md-9 col-sm-12 col-xs-12">
+        <div class="container-fluid">
+            <form method="POST" class="form-horizontal"> {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Usuarios <small>Configuración</small></h3>                       
+                    </div> 
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                <div class="form-group">                        
+                                    <div class="form-group">
+                                        <label>Usuario</label>
+                                        <input type="text" class="form-control" placeholder="Usuario" name="username" required value="{{username}}">
+                                    </div>
+                                    <!-- <div class="form-group">
+                                        <label for="password1">Contraseña</label>
+                                        <label id="lbl_warning"></label>
+                                        <div class="input-group">
+                                            <input id="password1" type="password" class="form-control password1" placeholder="Password"  name="password1" required>
+                                            <div class="input-group-append">
+                                                <span class="input-group-btn">
+                                                    <button type="button" id="see" class="btn btn-default" style="border-radius:3px; "><span id="activate" class="fa fa-eye"></span><span id="block" style="display: none" class="fa fa-eye-slash"></span></button>
+                                                </span>
+                                            </div>                                            
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password2">Confirmar Contraseña</label>
+                                        <div class="input-group">
+                                            <input id="password2" type="password" class="form-control password2" placeholder="Password"  name="password2" required>
+                                            <div class="input-group-append">
+                                                <span class="input-group-btn">
+                                                    <button type="button" id="see2" class="btn btn-default" style="border-radius:3px; "><span id="activate2" class="fa fa-eye"></span><span id="block2" style="display: none" class="fa fa-eye-slash"></span></button>
+                                                </span>
+                                            </div>                                            
+                                        </div>
+                                    </div> -->
+                                    <div class="form-group">
+                                        <label>Correo</label>
+                                        <input type="email" class="form-control" placeholder="Correo" name="email" value="{{email}}" required>
+                                    </div> 
+                                    
+                                    <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="icheck-success d-inline col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            {% if not is_superuser %}
+                                                <input id="su" type="checkbox" class="form-check-input" name="is_superuser"> 
+                                            {% endif %}
+                                            {% if is_superuser %}
+                                                <input id="su" type="checkbox" class="form-check-input" name="is_superuser" checked> 
+                                            {% endif %}
+                                            <label class="form-check-label" for="su">Sudo</label>
+                                        </div>
+                                        <div class="icheck-success d-inline col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            {% if not is_staff %}
+                                                <input id="st" type="checkbox" class="form-check-input" name="is_staff">
+                                            {% endif %}
+                                            {% if is_staff %}
+                                                <input id="st" type="checkbox" class="form-check-input" name="is_staff" checked>
+                                            {% endif %}
+                                            <label class="form-check-label" for="st">Admin</label>
+                                        </div>
+                                        <div class="icheck-success d-inline col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            {% if not is_active %}
+                                                <input id="ac" type="checkbox" class="form-check-input" name="is_active">
+                                            {% endif %}
+                                            {% if is_active %}
+                                                <input id="ac" type="checkbox" class="form-check-input" name="is_active" checked>
+                                            {% endif %}
+                                            <label class="form-check-label" for="ac">Activo</label>
+                                        </div>
+                                    </div>   
+                                    <!-- <div class="row">
+                                        <div class="form-check col-lg-12 col-md-12 col-sm-12 col-xs-12"><br>
+                                            <a class="btn btn-default" style="background-color: #2A3F54; color: #FFFFFF;" id="btnChange">Cambiar contraseña</a>    
+                                        </div>
+                                    </div>                                   -->
+                                </div>
+                            </div>  
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                <div class="form-group">                        
+                                    <div class="form-group">
+                                        <label>Nombre(s)</label>
+                                        <input type="text" class="form-control" name="first_name" placeholder="Nombre" value="{{first_name}}" required>
+                                    </div>  
+                                    <div class="form-group">
+                                        <label>Apellidos</label>
+                                        <input type="text" class="form-control" name="last_name" placeholder="Apellidos" value="{{last_name}}" required>
+                                    </div>  
+                                    <div class="form-group">
+                                        <label>Puesto</label>
+                                        <input type="text" class="form-control" name="Position" placeholder="Ej: 'Scheduler'" value="{{usExt.Position}}">
+                                    </div> 
+                                    <div class="form-group">
+                                        <label>Url</label>
+                                        <input type="text" class="form-control" name="UrlHome" placeholder="Ruta de Inicio" value="{{usExt.UrlHome}}" required>
+                                    </div>  
+                                    <!-- <div class="form-group">
+                                        <label>File input</label>
+                                        <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="exampleInputFile">
+                                            <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">Upload</span>
+                                        </div>
+                                        </div>
+                                    </div>                      -->
+                                </div>
+                            </div>
+                        </div>   
+                    </div>                 
+                    <div class="card-footer">
+                        <a class="btn btn-default" style="background-color: #2A3F54; color: #FFFFFF;" id="btnChange" href="{% url 'cpUser' us.id %}">Cambiar contraseña</a>
+                        <div style="float:right;">
+                            <a class="btn btn-info" id="btnPrevious" href="/users/">Regresar</a>  
+                            <button type="submit" class="btn btn-success">Guardar</button>                            
+                        </div>  
+                    </div>                                    
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock content %} 
+
+{% block extrascript %}
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+
+<script>
+
+</script>
+{% endblock extrascript %}
+
+

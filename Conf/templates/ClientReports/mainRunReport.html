@@ -1,0 +1,516 @@
+{% extends 'Base/base.html' %} {% load static %} 
+{% block title %} Run Report {% endblock %} 
+
+{% block extrahead %}
+
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datetimepicker/flatpickr.css' %}"> 
+  <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+
+
+    <style>
+        textarea {
+            resize: none; 
+        }
+
+        #chartdiv {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+{% endblock extrahead%}
+
+{% block content %}
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="titlesTemplates">Run Report <small></small></h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/index/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/conf/mainCorridas/">Runs</a></li>
+                        <li class="breadcrumb-item active">Run Report</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="container-fluid">
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Runs<small></small></h3>   
+                        <!-- <a style="float: right;" class="btn btn-success col-lg-1 col-md-1 col-sm-1 col-xs-1" id="btnAdd" href="/conf/mainCorridas/addRun"><i class="fa fa-plus-circle"></i></a>                   -->
+                    </div> 
+                    <div class="card-body">
+                        <div class="row">
+                            <table id="tbl_HistoryRuns" class="table table-bordered table-striped dataTable drt-inline">
+                                <thead>
+                                    <tr style="background-color: #163D54; font-size: 16px; color: #FFFFFF;">
+                                        <!-- <td>Id</td> -->
+                                        <th>Run Number</th>
+                                        <th>Scheduler</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Installer</th>
+                                        <th>Cargo Day</th>
+                                        <th>Installation Day</th>
+                                        <th>State</th>  
+                                        <th>Quantity</th>                                    
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if cntxHistoryRuns %}
+                                        {% for run in cntxHistoryRuns %}
+                                            <tr>
+                                                <td>{{run.RunNumber}}</td>
+                                                <td>{{run.SchedulerName}}</td>
+                                                <td>{{run.Status}}</td>
+                                                <td>{{run.CreateDateTime}}</td>
+                                                <td>{{run.Installer}}</td>
+                                                <td>{{run.CargoDay}}</td>   
+                                                <td>{{run.InstallationDay}}</td>                                          
+                                                <td>{{run.State}}</td>
+                                                <td>{{run.cntxAsignedRuns}} de {{run.NumberofCarports}}</td>
+                                                <td class="col-sm-1">
+                                                    <div class="input-group-prepend">
+                                                        <button type="button" class="btn btn-info dropdown-toggle btn-block" data-toggle="dropdown">
+                                                          Actions
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-right">
+                                                          <li class="dropdown-item" data-id="{{run.id}}" id="btnGenPDF{{run.id}}"><a style="color: #163D54;" > <strong>Report PDF</strong></a></li>
+                                                        </ul>   
+                                                    </div>
+                                                </td>
+                                            </tr>    
+                                        {% endfor %} 
+                                    {% endif %}              
+                                </tfoot>
+                            </table> 
+                        </div>
+                    </div>                 
+                    <div class="card-footer">                        
+                        <!-- <div style="float:right;">       
+                            <button id="btn_saveCarport" onclick="downjspdf();" type="button" class="btn btn-success">Guardar</button>                 
+                        </div>    -->
+                    </div>                                    
+                </div>
+        </div>
+    </section>
+    <section class="content col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="container-fluid">
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Runs<small></small></h3>   
+                        <!-- <a style="float: right;" class="btn btn-success col-lg-1 col-md-1 col-sm-1 col-xs-1" id="btnAdd" href="/conf/mainCorridas/addRun"><i class="fa fa-plus-circle"></i></a>                   -->
+                    </div> 
+                    <div class="card-body">
+                        <div class="row">
+                            <div id="chartdiv"></div> 
+                        </div>
+                    </div>                 
+                    <div class="card-footer">                        
+                        <!-- <div style="float:right;">       
+                            <button id="btn_saveCarport" onclick="downjspdf();" type="button" class="btn btn-success">Guardar</button>                 
+                        </div>    -->
+                    </div>                                    
+                </div>
+        </div>
+    </section>
+{% endblock content %} 
+
+{% block extrascript %}
+<script src="{% static 'plugins/datetimepicker/flatpickr.min.js' %}"></script>
+<script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+<script src="{% static 'plugins/jsPDF-1.3.2/dist/jspdf.min.js' %}"></script>
+<script src="{% static 'plugins/jsPDF-AutoTable/dist/jspdf.plugin.autotable.min.js' %}"></script>
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<!-- <script src="{% static 'plugins/jszip/jszip.min.js' %}"></script> -->
+<!-- <script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script> -->
+
+
+<!-- <script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script> -->
+<!-- <script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script> -->
+<!-- <script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script> -->
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+
+<script src="{% static 'plugins/amcharts4/core.js' %}"></script>
+<script src="{% static 'plugins/amcharts4/charts.js' %}"></script>
+<script src="{% static 'plugins/amcharts4/themes/material.js' %}"></script>
+<script src="{% static 'plugins/amcharts4/themes/kelly.js' %}"></script>
+<script src="{% static 'plugins/amcharts4/themes/dark.js' %}"></script>
+<script src="{% static 'plugins/amcharts4/themes/animated.js' %}"></script>
+
+<script> 
+var dataC = [];
+$(document).ready(function () {
+    $.ajax({
+        type: "POST",
+        url: '/conf/mainRunReport/',
+        data: {
+            'operationNo': 0,
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+        },
+        dataType: 'json',
+        success: function(cntxAjax) {
+            for (var b=0, lenB = cntxAjax.dataC.length; b<lenB; b++){
+                dataC.push({ Carport: cntxAjax.dataC[b]['Carport'], Quantity: cntxAjax.dataC[b]['Quantity']});
+            }
+            am4core.ready(function() {
+            // Themes begin
+            am4core.useTheme(am4themes_material);
+            am4core.useTheme(am4themes_animated);
+            // Themes end
+
+            var chart = am4core.create("chartdiv", am4charts.PieChart3D);
+            chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+            chart.legend = new am4charts.Legend();
+            chart.data = dataC;
+            var series = chart.series.push(new am4charts.PieSeries3D());
+            series.dataFields.value = "Quantity";
+            series.dataFields.category = "Carport";
+
+            });
+        }
+    });
+});
+
+$(function () {
+    $("#tbl_HistoryRuns").DataTable({
+        "paging": true,
+        "pageLength" : 10,
+        "lengthChange": true,
+        "searching": false,
+        "info": true,
+        "autoWidth": true,  
+        "ordering": true,
+        "responsive": true,        
+        "buttons": ["colvis"], //botones visibles
+        "language": {
+            "search": "Buscar",
+            "info": "Mostrando del _START_ al _END_, de _TOTAL_ entradas",        
+            "paginate": {
+                "previous": "Anterior",
+                "next": "Siguiente",
+            }
+        },
+        // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#tbl_HistoryRuns_wrapper .col-md-6:eq(0)');    
+});
+
+
+
+{% if cntxHistoryRuns %}
+    {% for run in cntxHistoryRuns %}  
+
+        $("#btnGenPDF{{run.id}}").click(function(){
+            downjspdf($("#btnGenPDF{{run.id}}").data('id'))
+        });
+    {% endfor %}
+{% endif %}  
+
+function downjspdf(RunID){
+    var columns = ["Style", "Customer Name", "Address", "City", "St", "Telephone"];
+    var carportCount = 0
+    var STYLE = 26
+    var SIZE = 20
+    var GAUGE = 20
+    var X = 25
+    var Y = 41
+    var Z = 61
+    $.ajax({
+        type: "POST",
+        url: '/conf/mainCorridas/',
+        data: {
+            'operationNo': 0,  
+            'RunID': RunID,
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+        },    
+        dataType: 'json',
+        success: function(cntxAjax) { 
+            var doc = new jsPDF('portrait', 'mm', 'letter');
+            var imgData = 'data:image/png;base64,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'
+            doc.addImage(imgData, 'JPEG', 5, 5, 60, 20, '','SLOW');  
+            doc.setFontSize(12); 
+            doc.setFontStyle('bold');            
+            doc.text(140, 20, 'RUN: '+cntxAjax.RunNumber);
+            doc.text(140, 30, 'RUN STATUS: '+cntxAjax.RunStatus);
+            doc.text(70, 45,'INSTALLER SCHEDULE SUMMARY')
+            doc.setFontSize(10); 
+            doc.text(15, 53, 'SCHEDULER: '+cntxAjax.Scheduler);
+
+            doc.autoTable(columns,cntxAjax.data, {margin: {top: 55}});
+
+            doc.addPage();
+            // // -------------------- TABLA FORMATO COMPLETO --------------------
+            var t = new Date(cntxAjax.RunCargoDay);
+            var monthNum = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+            // var month = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            var fecha = t.getFullYear().toString() + "/" + monthNum[t.getMonth()] + "/" + t.getDate().toString();
+            // var fecha2 = t.getDate().toString() + " de " + month[t.getMonth()] + " del " + t.getFullYear().toString();  
+            
+            doc.setFontSize(12);  
+            doc.text(80, 15, 'INSTALLER: '+cntxAjax.RunInstaller);
+            doc.text(140, 15, 'CARGO DAY: '+fecha);
+            doc.text(80, 25, 'STATE: '+cntxAjax.RunState);
+            doc.text(140, 25, 'RUN: '+cntxAjax.RunNumber);
+
+            var nLine = 46
+            for (var i = 0; i < 50; i++) {
+                doc.line(4, nLine, 205, nLine);
+                nLine += 4
+            }
+
+            doc.line(4, 30, 205, 30);   //LINEA HORIZONTAL PRINCIPAL
+            doc.line(4, 36, 205, 36)    //LINEA HORIZONTAL ('STYLE')
+            doc.line(4, 42, 205, 42)    //LINEA HORIZONTAL ('SIZE')
+            // doc.line(4, 59, 205, 59)    //LINEA HORIZONTAL ('GAUGE')
+            doc.line(55, 42, 55, 46)    //LINEA VERTICAL ('GAUGE 1')    
+            doc.line(100, 42, 100, 46)    //LINEA VERTICAL ('GAUGE 2')
+            doc.line(145, 42, 145, 46)    //LINEA VERTICAL ('GAUGE 3')
+            doc.line(190, 42, 190, 46)    //LINEA VERTICAL ('GAUGE 4')
+            // doc.line(4, 67, 205, 67)    //LINEA HORIZONTAL ('CERTIFICACION')
+            doc.line(4, 30, 4, 246)   //LINEA VERTICAL PRINCIPAL
+            doc.line(25, 30, 25, 246) //LINEA VERTICAL 1             
+            doc.line(70, 30, 70, 246)   //LINEA VERTICAL 2
+            doc.line(115, 30, 115, 246)   //LINEA VERTICAL 3
+            doc.line(160, 30, 160, 246)   //LINEA VERTICAL 4
+            doc.line(205, 30, 205, 246)   //LINEA VERTICAL ultima    
+            doc.setFontSize(8); 
+            doc.text(56,45,'GA');
+            doc.text(101,45,'GA');
+            doc.text(146,45,'GA');
+            doc.text(191,45,'GA');
+            
+            
+            doc.text(5,34,'STYLE');  
+            doc.text(5,40,'SIZE');   
+            doc.text(5,45,'GAUGE');
+            doc.text(5,49,'CERTIF.');
+            doc.setFontSize(10);
+            doc.text(5, 250, "Observaciones:");
+            // doc.setFontSize(6);
+            // doc.text(5,62,'ROLL UP DOOR'); 
+            // doc.text(5,65,'HARDWARE'); 
+        // -------------------- END TABLA FORMATO COMPLETO --------------------
+            cntxAjax.cntxRunsDetails.forEach(function(cntxRunsDetails) {
+                if(carportCount === 4){
+                    doc.addPage();
+                    carportCount = 0
+                    STYLE = 26
+                    SIZE = 20
+                    GAUGE = 20
+                    X = 25
+                    Y = 41
+                    Z = 61
+                    var t = new Date(cntxAjax.RunCargoDay);
+                    var monthNum = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+                    var fecha = t.getFullYear().toString() + "/" + monthNum[t.getMonth()] + "/" + t.getDate().toString();
+                    
+                    doc.setFontSize(12);  
+                    doc.text(80, 15, 'INSTALLER: '+cntxAjax.RunInstaller);
+                    doc.text(140, 15, 'CARGO DAY: '+fecha);
+                    doc.text(80, 25, 'STATE: '+cntxAjax.RunState);
+                    doc.text(140, 25, 'RUN: '+cntxAjax.RunNumber);
+                    var nLine = 46
+                    for (var i = 0; i < 50; i++) {
+                        doc.line(4, nLine, 205, nLine);
+                        nLine += 4
+                    }
+
+                    doc.line(4, 30, 205, 30);   //LINEA HORIZONTAL PRINCIPAL
+                    doc.line(4, 36, 205, 36)    //LINEA HORIZONTAL ('STYLE')
+                    doc.line(4, 42, 205, 42)    //LINEA HORIZONTAL ('SIZE')
+                    // doc.line(4, 59, 205, 59)    //LINEA HORIZONTAL ('GAUGE')
+                    doc.line(55, 42, 55, 46)    //LINEA VERTICAL ('GAUGE 1')    
+                    doc.line(100, 42, 100, 46)    //LINEA VERTICAL ('GAUGE 2')
+                    doc.line(145, 42, 145, 46)    //LINEA VERTICAL ('GAUGE 3')
+                    doc.line(190, 42, 190, 46)    //LINEA VERTICAL ('GAUGE 4')
+                    // doc.line(4, 67, 205, 67)    //LINEA HORIZONTAL ('CERTIFICACION')
+                    doc.line(4, 30, 4, 246)   //LINEA VERTICAL PRINCIPAL
+                    doc.line(25, 30, 25, 246) //LINEA VERTICAL 1             
+                    doc.line(70, 30, 70, 246)   //LINEA VERTICAL 2
+                    doc.line(115, 30, 115, 246)   //LINEA VERTICAL 3
+                    doc.line(160, 30, 160, 246)   //LINEA VERTICAL 4
+                    doc.line(205, 30, 205, 246)   //LINEA VERTICAL ultima    
+                    doc.setFontSize(8); 
+                    doc.text(56,45,'GA');
+                    doc.text(101,45,'GA');
+                    doc.text(146,45,'GA');
+                    doc.text(191,45,'GA');
+                    
+                    
+                    doc.text(5,34,'STYLE');  
+                    doc.text(5,40,'SIZE');   
+                    doc.text(5,45,'GAUGE');
+                    doc.text(5,49,'CERTIF.');
+                    doc.setFontSize(10);
+                    doc.text(5, 250, "Observaciones:");
+                }
+                doc.addImage(imgData, 'JPEG', 5, 5, 60, 20, '','SLOW'); 
+                doc.setFontSize(12); 
+                doc.setFontStyle('bold');
+                // doc.text(70, 10, '1124 N. South St, Mount Airy, NC27030');            
+
+                            
+                doc.setFontSize(12);
+                doc.text(STYLE,34,cntxRunsDetails.Name);
+                doc.setFontSize(13);        
+                // doc.setFontStyle('normal');
+                doc.text(X,41,cntxRunsDetails.Width);
+                doc.text(Y,41,cntxRunsDetails.Length);
+                doc.text(Z,41,cntxRunsDetails.Heigth);
+                doc.setFontSize(8); 
+                doc.text(Y,45,cntxRunsDetails.Gauge);
+                doc.text(X+1,49,cntxRunsDetails.Certification);
+                doc.setFontSize(8);
+                doc.setFontStyle('normal');
+                doc.text(X+28,49,'PSF/MPH');
+                doc.setFontStyle('bold');
+                
+                carportCount = carportCount + 1     
+                STYLE = STYLE + 45        
+                X = X + 45
+                Y = Y + 45
+                Z = Z + 45
+                
+            });
+            const addFooters = doc => {
+            const pageCount = doc.internal.getNumberOfPages()
+
+            // pdf.setFont('helvetica', 'italic');
+            doc.setFontStyle('bold');
+            doc.setFontSize(10 );
+            
+            // doc.text(15, 240, "Observaciones:");
+            // doc.setFontSize(10);
+            // doc.text(15, 256, "1124 N. South St, Mount Airy, NC27030");
+
+            for (var i = 1; i <= pageCount; i++) {
+                // doc.setFontSize(10);
+                // doc.text(15, 256, "1124 N. South St, Mount Airy, NC27030");
+                doc.setPage(i)
+                doc.text('Pag ' + String(i) + ' of ' + String(pageCount), doc.internal.pageSize.width / 2, 270, {
+                align: 'center' })
+            }
+            }
+
+            addFooters(doc);
+            doc.save('RUN_'+cntxAjax.RunNumber+'.pdf');
+        }  
+    });
+
+    // var carportCount = 0
+    // var STYLE = 26
+    // var SIZE = 20
+    // var GAUGE = 20
+    // var X = 25
+    // var Y = 41
+    // var Z = 61
+
+//     var doc = new jsPDF();
+//     var imgData = 'data:image/png;base64,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'
+
+//     doc.addImage(imgData, 'JPEG', 5, 5, 60, 20, '','SLOW');  
+//     doc.addPage(); 
+    
+// // -------------------- TABLA FORMATO COMPLETO --------------------
+//     doc.setFontSize(12);  
+//     doc.text(80, 20, 'INSTALLER: Marco');
+//     doc.text(140, 20, 'CARGO DAY: 12/05/2021');
+//     doc.text(80, 30, 'STATE: AR');
+//     doc.text(140, 30, 'RUN: 1');
+
+//     doc.line(4, 35, 205, 35);   //LINEA HORIZONTAL PRINCIPAL
+//     doc.line(4, 43, 205, 43)    //LINEA HORIZONTAL ('STYLE')
+//     doc.line(4, 51, 205, 51)    //LINEA HORIZONTAL ('SIZE')
+//     doc.line(4, 59, 205, 59)    //LINEA HORIZONTAL ('GAUGE')
+//     doc.line(55, 51, 55, 59)    //LINEA VERTICAL ('GAUGE 1')    
+//     doc.line(100, 51, 100, 59)    //LINEA VERTICAL ('GAUGE 2')
+//     doc.line(145, 51, 145, 59)    //LINEA VERTICAL ('GAUGE 3')
+//     doc.line(190, 51, 190, 59)    //LINEA VERTICAL ('GAUGE 4')
+//     doc.line(4, 67, 205, 67)    //LINEA HORIZONTAL ('CERTIFICACION')
+//     doc.line(4, 35, 4, 200)   //LINEA VERTICAL PRINCIPAL
+//     doc.line(25, 35, 25, 200) //LINEA VERTICAL 1             
+//     doc.line(70, 35, 70, 200)   //LINEA VERTICAL 2
+//     doc.line(115, 35, 115, 200)   //LINEA VERTICAL 3
+//     doc.line(160, 35, 160, 200)   //LINEA VERTICAL 4
+//     doc.line(205, 35, 205, 200)   //LINEA VERTICAL ultima    
+    
+//     doc.text(56,58,'GA');
+//     doc.text(101,58,'GA');
+//     doc.text(146,58,'GA');
+//     doc.text(191,58,'GA');
+    
+//     doc.setFontSize(8); 
+//     doc.text(5,40,'STYLE');  
+//     doc.text(5,48,'SIZE');   
+//     doc.text(5,56,'GAUGE');
+//     doc.text(5,64,'CERTIF.');
+//     // doc.setFontSize(6);
+//     // doc.text(5,62,'ROLL UP DOOR'); 
+//     // doc.text(5,65,'HARDWARE'); 
+// // -------------------- END TABLA FORMATO COMPLETO --------------------
+
+//     {% if cntxCarports %}
+//         {% for carport in cntxCarports %}
+//             doc.setFontSize(12);
+//             // doc.addPage();
+//             doc.addImage(imgData, 'JPEG', 5, 5, 60, 20, '','SLOW');  
+//             doc.setFontStyle('bold');
+//             // doc.text(70, 10, '1124 N. South St, Mount Airy, NC27030');            
+
+//             // doc.text(STYLE,40,'{{carport.ProductID.Name}}');            
+//             doc.setFontSize(12);
+//             doc.text(STYLE,40,'{{carport.ProductID.Name}}');
+//             doc.setFontSize(15);        
+//             doc.setFontStyle('normal');
+//             doc.text(X,50,'{{carport.Width}}');
+//             doc.text(Y,50,'{{carport.Length}}');
+//             doc.text(Z,50,'{{carport.Heigth}}');
+//             doc.text(Y,58,'{{carport.Gauge}}');
+//             doc.text(X+1,66,'{{carport.Certification}} ');
+//             doc.setFontSize(8);
+//             doc.text(X+28,66,'PSF/MPH');
+              
+//             carportCount = carportCount + 1     
+//             STYLE = STYLE + 45        
+//             X = X + 45
+//             Y = Y + 45
+//             Z = Z + 45
+
+
+//         {% endfor %}
+//     {% endif %}  
+
+// 	doc.save('RUN_1_12/05/2021.pdf');
+};   
+
+
+$('.select2bs4').select2({
+    theme: 'bootstrap4',
+    placeholder: " ",
+    allowClear: true
+})
+</script>
+{% endblock extrascript %}
+
+

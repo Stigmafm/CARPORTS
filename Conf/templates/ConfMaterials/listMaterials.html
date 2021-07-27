@@ -1,0 +1,175 @@
+
+{% extends 'Base/base.html' %} {% load static %} 
+{% block title %} Materiales {% endblock %} 
+
+{% block extrahead %}
+
+<link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+
+    <style>
+        .Warning{
+            background: orange;
+        }
+        .Danger{
+            background: red;
+        }
+        .fontWhite{
+            color: #FFFFFF;
+        }
+    </style>
+{% endblock extrahead%}
+
+{% block content %}
+
+ <!-- Content Wrapper. Contains page content -->
+<!-- <div class="content-wrapper"> -->
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="titlesTemplates">Materiales</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/index/">Home</a></li>
+                        <li class="breadcrumb-item active">Materiales</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Materiales <small>Configuraci&oacute;n</small></h3>
+                  <a style="float: right;" class="btn btn-success col-lg-1 col-md-1 col-sm-1 col-xs-1" id="btnAdd" href="/conf/materials/add"><i class="fa fa-plus-circle"></i></a>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                  <table id="tbl_materials" class="table table-bordered table-striped dataTable drt-inline">
+                    <thead>
+                        <tr>
+                            <td>Id</td>
+                            <th>Nombre</th>
+                            <th>Descripcion</th>
+                            <th>Estado</th>
+                            <th>Modificar</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if cntxMaterials %}
+                            {% for material in cntxMaterials %}
+                                <tr>
+                                    <td>{{material.id}}</td>
+                                    <td>{{material.Name}}</td>
+                                    <td>{{material.Description}}</td>
+                                    {% if material.Block == True %}
+                                        <td>Activo</td>
+                                    {% else %}
+                                        <td>Bloqueado</td>
+                                    {% endif %}
+                                    <td class="col-sm-1">
+                                            <a class="btn btn-block btn-info" id="btnMod{{material.id}}" href="{% url 'modMaterials' material.id %}">
+                                            <i class="fa fa-pencil-alt"></i>
+                                        </a>
+                                    </td>
+                                    <td class="col-sm-1">
+                                        <a href="#" class="btn btn-block btn-danger" data-toggle="modal" data-target="#DeleteAlert-{{material.id}}">
+                                            <i class="fa fa-trash-alt"></i>
+                                        </a>
+                                        <div class="modal fade" id="DeleteAlert-{{material.id}}">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content" style="border-radius: 10px;">
+                                                    <div class="modal-header" style="background: #d9534f">
+                                                        <h4 class="modal-title"style="color: white">ADVERTENCIA</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true" style="color: white">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <h4>¿Esta seguro que desea eliminar el material <strong style="color: #cb3234;">{{material.Name}}?</strong></h4>
+                                                    </div>
+                                                    <div class="modal-footer justify-content-between">
+                                                        <button id="cancel-{{material.id}}" type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                                        <button id="delete-{{material.id}}" type="button" class="btn btn-danger" value="{{material.id}}">Eliminar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>    
+                            {% endfor %} 
+                        {% endif %}              
+                    </tfoot>
+                  </table>
+                </div>
+                <!-- /.card-body -->
+              </div>
+        </div>
+    </section>
+<!-- </div> -->
+{% endblock content %} 
+
+{% block extrascript %}
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<!-- <script src="{% static 'plugins/jszip/jszip.min.js' %}"></script> -->
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<!-- <script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script> -->
+<!-- <script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script> -->
+<!-- <script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script> -->
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<!-- AdminLTE App -->
+
+<script>
+    // $("#btnAdd").click(function(){
+    //     console.log('click')
+    // });
+$(function () {
+    $("#tbl_materials").DataTable({
+        "responsive": true, 
+        "lengthChange": false, 
+        "autoWidth": false,        
+        "buttons": ["colvis"], //botones visibles
+        "language": {
+            "search": "Buscar",
+            "info": "Mostrando del _START_ al _END_, de _TOTAL_ entradas",        
+            "paginate": {
+                "previous": "Anterior",
+                "next": "Siguiente",
+            }
+        },
+        // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#tbl_materials_wrapper .col-md-6:eq(0)');    
+});
+
+{% for material in cntxMaterials %}
+
+    $("#delete-{{material.id}}").click(function() {
+        $.ajax({
+            type: "GET",
+            url: '/conf/materials/del',
+            data: {
+                'materialID': $("#delete-{{material.id}}").val(),
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            dataType: 'json',
+            success: function(cntxAjax) {
+                window.location = "/conf/materials/del";
+            }
+        });
+    });  
+{% endfor %}
+</script>
+{% endblock extrascript %}
+
+

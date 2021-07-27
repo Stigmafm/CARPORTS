@@ -1,0 +1,230 @@
+{% extends 'Base/base.html' %} {% load static %} 
+{% block title %} Agregar Productos {% endblock %} 
+
+{% block extrahead %}
+
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+
+    <style>
+        textarea {
+            resize: none; 
+        }
+
+        .warn {
+            border: 2px solid orange;
+        }
+    </style>
+{% endblock extrahead%}
+
+{% block content %}
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="titlesTemplates">Productos <small>Agregar</small></h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/index/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/conf/products/">Productos</a></li>
+                        <li class="breadcrumb-item active">Agregar</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="container-fluid">
+            <form id="form_data" method="POST" class="form-horizontal"> 
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Productos <small>Configuración</small></h3>                                                    
+                            </div> 
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="form-group">                        
+                                            <div class="form-group">
+                                                <label>Nombre</label>
+                                                <input type="text" class="form-control" placeholder="Name" name="Name" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Descripcion</label>
+                                                <textarea name="Description" id="Description" class="form-control" rows="5" placeholder="Ingrese descripcion" required></textarea>
+                                            </div> 
+                                            <div class="icheck-success d-inline col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                                <input type="checkbox" class="form-check-input" id="Active" name="Active" checked>
+                                                <label class="form-check-label" for="Active">Activo</label>
+                                            </div>  
+                                        </div>
+                                    </div>  
+                                </div>   
+                            </div>                 
+                            <div class="card-footer">      
+                                <a class="btn btn-default" style="background-color: #2A3F54; color: #FFFFFF;" onclick="addMaterials();">Agregar Materiales</a>                  
+                                <div style="float:right;">       
+                                    <a class="btn  btn-info" id="btnPrevious" href="/conf/products/">Regresar</a>  
+                                    <button type="submit" class="btn btn-success">Guardar</button>                 
+                                </div>   
+                            </div>                                    
+                        </div>
+                    </div>
+                    <div style="display: none;" id="div_addMaterials" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">    
+                        <div class="card card-default">
+                            <div class="card-header">
+                                <h3 class="card-title">Agregar Materiales</h3>
+                                <div style="float:right;">       
+                                    <label id="lbl_Duplicate"></label>            
+                                </div>  
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <label>Materiales:</label>
+                                        <select id="select_Materials" class="form-control select2bs4" style="width: 100%;">
+                                            <option value=""></option>
+                                            {% if cntxMaterials %}
+                                                {% for material in cntxMaterials %}
+                                                    <option value="{{material.id}}">{{material.Name}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>   
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <label>Cantidad:</label>
+                                        <input id="quantity" type="number" class="form-control" placeholder="Cantidad" name="Cantidad">
+                                    </div>                               
+                                </div>
+                                <div class="row">                                
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><br>
+                                        <button id="btn_addMaterials" type="button" class="btn btn-default btn-block" style="background-color: #2A3F54; color: #FFFFFF;">Agregar</button>
+                                    </div>
+                                </div>
+                                <br>
+                                <table id="tbl_Materials" class="table table-bordered table-striped dataTable drt-inline">
+                                    <thead>
+                                        <tr>
+                                            <th>Material</th>
+                                            <th>Cantidad</th>
+                                            <th>Eliminar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>                                                    
+                                    </tfoot>
+                                </table>
+                                <input style="display: none;" id="input_dataMaterials" name="input_dataMaterials" class="form-control">
+                            </div>
+                            <div class="card-footer">
+                                
+                            </div>
+                        </div> 
+                    </div>
+                </div>                
+            </form>
+        </div>
+    </section>
+    
+{% endblock content %} 
+
+{% block extrascript %}
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+
+<script>  
+
+function addMaterials(){
+    document.getElementById("div_addMaterials").style = "block";
+}
+
+function RefreshAddMaterials() {
+    $(function() {
+        var values = []; 
+        var aux = [];
+        var x = 0;
+        $("#tbl_Materials").find("td").each(function(){ 
+            if (x<2){ 
+                aux[x] = $(this).attr('value'); 
+                x++; 
+            } 
+            if (x=2){ 
+                x=0; 
+                values.push(aux); 
+                aux = []; 
+            } 
+        }); 
+        $("#input_dataMaterials").val(values);
+    }); 
+}
+
+$("#btn_addMaterials").click(function(){
+    if ($("#select_Materials").val() == ''){
+        $('#select_Materials').next().addClass("warn");
+        $('#lbl_Duplicate').replaceWith(`<label id="lbl_Duplicate" class="alert-warning msg_alert" style="float:right; border-radius: 5px;"> Selecciona Material </label>`);
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('#select_Materials').next().removeClass('warn');
+                $('.msg_alert').fadeOut(1500);
+            }, 2000);
+        });
+    }else if ($("#quantity").val().length == 0){
+        $('#quantity').addClass("warn");
+        $('#lbl_Duplicate').replaceWith(`<label id="lbl_Duplicate" class="alert-warning msg_alert" style="float:right; border-radius: 5px;"> Ingresa Cantidad </label>`);
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('#quantity').removeClass('warn');
+                $('.msg_alert').fadeOut(1500);
+            }, 2000);
+        });
+    }else{
+        var flgRep = false;
+        var x = 0;
+        $("#tbl_Materials").find("td").each(function(){
+            if (x%2==0){
+                if ($(this).attr('value') == $("#select_Materials").val()){
+                    flgRep = true;
+                }
+            }x++;
+        });
+        if(flgRep != true){  
+            Quantity = parseFloat($("#quantity").val()).toFixed(2)  
+            $("#tbl_Materials > tbody").append(`
+                <tr id="tr-`+$("#select_Materials option:selected").val()+`"> 
+                    <td style="text-align: center; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 300;" value=`+$("#select_Materials option:selected").val()+`>`+$("#select_Materials option:selected").text()+`</td>                                                                                       
+                    <td style="text-align: center; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 300;" value=`+Quantity+`>`+Quantity+`</td> 
+                    <th style="text-align: center; font-family: 'Roboto', sans-serif; font-size: 15px; font-weight: 300;">
+                        <a class="btn btn-block btn-danger" onclick="$('#tr-`+$("#select_Materials option:selected").val()+`').remove(); RefreshAddMaterials();">
+                            <i class="fa fa-trash-alt"></i>
+                        </a>
+                    </th>                                                                                                                                                                 
+                </tr>
+            `);
+            RefreshAddMaterials();     
+        }else{
+            $('#select_Materials').next().addClass("warn");
+            $('#lbl_Duplicate').replaceWith(`<label id="lbl_Duplicate" class="alert-warning msg_alert" style="float:right; border-radius: 5px;"> Material Repetido </label>`);
+            $(document).ready(function() {
+                setTimeout(function() {
+                    $('#select_Materials').next().removeClass('warn');
+                    $('.msg_alert').fadeOut(1500);
+                }, 2000);
+            });
+        }
+    }    
+});
+
+$('.select2bs4').select2({
+    theme: 'bootstrap4',
+    placeholder: " ",
+    allowClear: true
+})
+</script>
+{% endblock extrascript %}
+
+

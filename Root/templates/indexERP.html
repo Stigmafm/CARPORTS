@@ -1,0 +1,187 @@
+{% extends 'Base/base.html' %} {% load staticfiles %} 
+{% block title %} Principal {% endblock %} 
+
+{% block extrahead %}
+    <style>
+        .Warning{
+            background: orange;
+        }
+        .Danger{
+            background: red;
+        }
+        .fontWhite{
+            color: #FFFFFF;
+        }
+    </style>
+{% endblock extrahead%}
+
+{% block content %}
+
+<div class="right_col" role="main">
+    <div class="page-title">
+        <div class="title_left">
+            <!--<h3>Resumen de Sitios</h3>-->
+            <h3>Index ERP</h3>
+        </div>
+        <ol class="breadcrumb" style="float: right;">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Index</a></li>              
+        </ol>
+    </div>
+    <!--
+    {% for sit in cntxSitesUser %}
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" value="{{sit.SiteID.id}}" id="divSite-{{sit.SiteID.id}}">
+            <div class="x_content">
+                <div class="row">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h4>{{sit.SiteID}}</h4>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div id="divAreas-{{sit.SiteID.id}}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}-->
+</div>
+{% endblock content %} 
+
+{% block extrascript %}
+<!--
+<script>
+        $(function() {   
+        {% for sit in cntxSitesUser %}
+            $.ajax({
+                type: "POST",
+                url: '/conf/erp/sales/pos/index/',
+                data: {
+                    'operationNo':1,
+                    'SiteID': {{sit.SiteID.id}},
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                dataType: 'json',
+                success: function(cntxAjax) {
+                    if(cntxAjax.Areas){  
+                        for (var a=0, lenA = cntxAjax.Areas.length; a<lenA; a++){  
+                            $("#divAreas-{{sit.SiteID.id}}").after(`
+                                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" style="cursor: pointer;" id="Area-`+cntxAjax.Areas[a].id+`" onclick="window.location='/conf/erp/sales/pos/index/detailsarea/`+cntxAjax.Areas[a].id+`'; divDetailsArea(`+cntxAjax.Areas[a].id+`);">
+                                    <div class="x_content">
+                                        <div class="row">
+                                            <div class="x_panel" id="divAlert-`+cntxAjax.Areas[a].id+`">
+                                                <div class="row font-`+cntxAjax.Areas[a].id+`">
+                                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="text-align: center">
+                                                        <h3>`+cntxAjax.Areas[a].Name+`</h3>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                                        <h4 id="boxCash-`+cntxAjax.Areas[a].id+`" value="`+cntxAjax.Areas[a].id+`">Cajas: $ ... </h4>
+                                                        <h4 id="boxSells-`+cntxAjax.Areas[a].id+`">Ventas: $ ...</h4>
+                                                        <h4 id="boxEarnings-`+cntxAjax.Areas[a].id+`">Ganancias: $ ...</h4>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4" style="text-align: right">
+                                                        <h1 style="font-size: 50px; color: #a59999"><li id="Icon-`+cntxAjax.Areas[a].id+`" class="fa fa-building font-`+cntxAjax.Areas[a].id+`"></li></h1>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `);   
+                            $.ajax({
+                                type: "POST",
+                                url: '/conf/erp/sales/pos/index/',
+                                data: {
+                                    'operationNo':2,
+                                    'AreaID': $('#boxCash-'+cntxAjax.Areas[a].id).attr('value'),
+                                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                                },
+                                dataType: 'json',
+                                success: function(cntxAjax) {
+                                    if(cntxAjax.Area){  
+                                        var numero = cntxAjax.AreaCash;
+                                        var resultado = "";
+                                        nuevoNumero=numero;
+                                        if(numero.indexOf(".")>=0)
+                                            nuevoNumero=nuevoNumero.substring(0,nuevoNumero.indexOf("."));
+                                        for (var j, i = nuevoNumero.length - 1, j = 0; i >= 0; i--, j++)
+                                            resultado = nuevoNumero.charAt(i) + ((j > 0) && (j % 3 == 0)? ",": "") + resultado;
+                                        if(numero.indexOf(".")>=0)
+                                            resultado+=numero.substring(numero.indexOf("."));
+                                        $('#boxCash-'+cntxAjax.AreaID).replaceWith(`
+                                            <h4 id="boxCash-`+cntxAjax.AreaID+`" value="`+cntxAjax.AreaID+`">Cajas: $ `+resultado+`</h4>
+                                        `);
+                                        var numero = cntxAjax.AreaSellsCash;
+                                        var resultado = "";
+                                        nuevoNumero=numero;
+                                        if(numero.indexOf(".")>=0)
+                                            nuevoNumero=nuevoNumero.substring(0,nuevoNumero.indexOf("."));
+                                        for (var j, i = nuevoNumero.length - 1, j = 0; i >= 0; i--, j++)
+                                            resultado = nuevoNumero.charAt(i) + ((j > 0) && (j % 3 == 0)? ",": "") + resultado;
+                                        if(numero.indexOf(".")>=0)
+                                            resultado+=numero.substring(numero.indexOf("."));
+                                        $('#boxSells-'+cntxAjax.AreaID).replaceWith(`
+                                            <h4 id="boxSells-`+cntxAjax.AreaID+`" value="`+cntxAjax.AreaID+`">Ventas: $ `+resultado+`</h4>
+                                        `);
+                                        var numero = cntxAjax.AreaEarnings;
+                                        var resultado = "";
+                                        nuevoNumero=numero;
+                                        if(numero.indexOf(".")>=0)
+                                            nuevoNumero=nuevoNumero.substring(0,nuevoNumero.indexOf("."));
+                                        for (var j, i = nuevoNumero.length - 1, j = 0; i >= 0; i--, j++)
+                                            resultado = nuevoNumero.charAt(i) + ((j > 0) && (j % 3 == 0)? ",": "") + resultado;
+                                        if(numero.indexOf(".")>=0)
+                                            resultado+=numero.substring(numero.indexOf("."));
+                                        $('#boxEarnings-'+cntxAjax.AreaID).replaceWith(`
+                                            <h4 id="boxEarnings-`+cntxAjax.AreaID+`" value="`+cntxAjax.AreaID+`">Ganancias: $ `+resultado+`</h4>
+                                        `);
+                                    }
+                                    if (cntxAjax.Alert != '') {
+                                        if (cntxAjax.AlertDebt = 'Danger') {
+                                            setInterval(function(){
+                                                $('.font-'+cntxAjax.Debt).addClass('fontWhite');
+                                                $('#divAlert-'+cntxAjax.Debt).addClass(cntxAjax.AlertDebt);
+                                                $('#divAlert-'+cntxAjax.Debt).fadeTo(800, .2).fadeTo(800, 1);
+                                                $('#Icon-'+cntxAjax.Debt).replaceWith(`<li id="Icon-`+cntxAjax.Debt+`" class="fa fa-warning" style="color: white"></i>`);
+                                            });
+                                        }
+                                        setInterval(function(){
+                                            $('.font-'+cntxAjax.InvMin).addClass('fontWhite');
+                                            $('#divAlert-'+cntxAjax.InvMin).addClass(cntxAjax.Alert);
+                                            $('#divAlert-'+cntxAjax.InvMin).fadeTo(800, .2).fadeTo(800, 1);
+                                            $('#Icon-'+cntxAjax.InvMin).replaceWith(`<li id="Icon-`+cntxAjax.InvMin+`" class="fa fa-warning" style="color: white"></i>`);
+                                        });
+                                        
+                                    }
+
+                                    if(cntxAjax.AlertDebt != ''){
+                                        if (cntxAjax.Alert = 'Danger') {
+                                            setInterval(function(){
+                                                $('.font-'+cntxAjax.InvMin).addClass('fontWhite');
+                                                $('#divAlert-'+cntxAjax.InvMin).addClass(cntxAjax.Alert);
+                                                $('#divAlert-'+cntxAjax.InvMin).fadeTo(800, .2).fadeTo(800, 1);
+                                                $('#Icon-'+cntxAjax.InvMin).replaceWith(`<li id="Icon-`+cntxAjax.InvMin+`" class="fa fa-warning" style="color: white"></i>`);
+                                            });
+                                        }
+                                        setInterval(function(){
+                                            $('.font-'+cntxAjax.Debt).addClass('fontWhite');
+                                            $('#divAlert-'+cntxAjax.Debt).addClass(cntxAjax.AlertDebt);
+                                            $('#divAlert-'+cntxAjax.Debt).fadeTo(800, .2).fadeTo(800, 1);
+                                            $('#Icon-'+cntxAjax.Debt).replaceWith(`<li id="Icon-`+cntxAjax.Debt+`" class="fa fa-warning" style="color: white"></i>`);
+                                        });
+                                    }
+                                } 
+                            });
+                        }    
+                        $("#divAreas-{{sit.SiteID.id}}").remove();
+                    }
+                } 
+            });
+        {% endfor %}
+        });
+        function divDetailsArea(AreaID){
+            $('#Icon-'+AreaID).replaceWith(`<li class="fa fa-circle-o-notch fa-spin fa-1x fa-fw font-`+AreaID+`"></i>`);
+        }
+</script>-->
+{% endblock extrascript %}
+
+

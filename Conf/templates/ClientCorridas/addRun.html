@@ -1,0 +1,153 @@
+{% extends 'Base/base.html' %} {% load static %} 
+{% block title %} Agregar Corrida {% endblock %} 
+
+{% block extrahead %}
+
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datetimepicker/flatpickr.css' %}"> 
+  <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+
+    <style>
+        textarea {
+            resize: none; 
+        }
+    </style>
+{% endblock extrahead%}
+
+{% block content %}
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Corridas <small>Agregar</small></h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/index/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/conf/mainCorridas/">Corridas</a></li>
+                        <li class="breadcrumb-item active">Agregar</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="container-fluid">
+            <form id="form_data" method="POST" class="form-horizontal"> 
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Corridas <small>Configuración</small></h3>
+                        <div style="float:right;">  
+                            <h3 class="card-title">Scheduler:  <strong  style="color: gray;">{{ user.first_name }} {{ user.last_name }}</strong></h3>                   
+                        </div>  
+                    </div> 
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <input style="display: none;" type="text" name="SchedulerID" value="{{ user.id }}">
+
+                                <div class="form-group"> 
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <div class="form-group">
+                                                <label>Cargo Day: </label>
+                                                <div class="input-group">
+                                                    <input id="CargoDayDate" type="datetime-local" class="form-control" style="background-color: white;" name="CargoDayDate" required>
+                                                    <div class="input-group-append">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>      
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <div class="form-group">
+                                                <label>Installation Day: </label>
+                                                <div class="input-group">
+                                                    <input id="InstallationDayDate" type="datetime-local" class="form-control" style="background-color: white;" name="InstallationDayDate" required>
+                                                    <div class="input-group-append">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>   
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <label id="select_staff">Installer:</label>
+                                            <select id="select_staff" name="select_staff" class="form-control select2bs4" style="width: 100%;">
+                                                <option value=""></option>
+                                                {% if cntxStaff %}
+                                                    {% for staff in cntxStaff %}
+                                                        <option value="{{staff.Name}}">{{staff.Name}}</option>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </select>
+                                        </div>   
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <label for="State">State:</label>  
+                                        <input id="State" type="text" class="form-control" placeholder="State" name="State" required>
+                                        </div>                               
+                                    </div>     
+                                    <div class="row">  
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12"><br>
+                                            <label for="NumberofCarports">Number of Carports:</label>
+                                        <input id="NumberofCarports" type="number" class="form-control" onkeypress="return OnlyNumbers(event)" placeholder="Number of Carports" name="NumberofCarports" required>
+                                        </div>                               
+                                    </div>                                
+                                </div>
+                            </div>  
+                        </div>   
+                    </div>                 
+                    <div class="card-footer">                        
+                        <div style="float:right;">       
+                            <a class="btn  btn-info" id="btnPrevious" href="/conf/mainCorridas/">Regresar</a>  
+                            <button type="submit" class="btn btn-success">Iniciar Corrida</button>                 
+                        </div>   
+                    </div>                                    
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock content %} 
+
+{% block extrascript %}
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/datetimepicker/flatpickr.min.js' %}"></script>
+<script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+
+<script>     
+$(document).ready(function () {
+    $('#CargoDayDate').flatpickr({
+        enableTime: false,
+        enableSeconds : false,
+        time_24hr : true,
+        utc : true,
+        minDate: Date.now()-18000000,
+        //defaultDate: Date.now()-18000000,
+        clickOpens : true
+    });
+
+    $('#InstallationDayDate').flatpickr({
+        enableTime: false,
+        enableSeconds : false,
+        time_24hr : true,
+        utc : true,
+        minDate: Date.now()-18000000,
+        //defaultDate: Date.now()-18000000,
+        clickOpens : true
+    }); 
+});
+
+$('.select2bs4').select2({
+    theme: 'bootstrap4',
+    placeholder: "Choose...",
+    allowClear: true
+})
+</script>
+{% endblock extrascript %}
+
+

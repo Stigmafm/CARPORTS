@@ -1,0 +1,65 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>LIS! | Activacion de Licencia </title>
+
+    <link rel="stylesheet" href="{% static '/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/nprogress/nprogress.css' %}">
+    <link rel="stylesheet" href="{% static 'dist/css/theme.css' %}">
+
+  </head>
+
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+        <!-- page content -->
+        <div class="col-md-12">
+          <div class="col-middle">
+            <div class="text-center text-center">
+              <h1 class="error-number">License Error</h1>
+              <h2>Access denied</h2>
+              <p>A license is required to access this resource. <a href="/">Return to main page</a></p>   
+              <br>
+              <label>Contact the SIB-SAM support to correct this problem</label><br>
+              <label>Email: ventas@sib-ingenieria.com.mx | sales@sib-ingenieria.com.mx</label><br>
+              <label>Phone: +52 (442) 220 58 91 | +52 (442) 220 65 36</label><br>
+              
+              <!--
+              <div class="mid_center">
+                <h3>Search</h3>
+                <form>
+                  <div class="col-xs-12 form-group pull-right top_search">
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="Search for...">
+                      <span class="input-group-btn">
+                              <button class="btn btn-default" type="button">Go!</button>
+                          </span>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              -->
+            </div>
+          </div>
+        </div>
+        <!-- /page content -->
+      </div>
+    </div>
+
+    <script src="{% static 'plugins/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'plugins/fastclick/lib/fastclick.js' %}"></script> 
+    <script src="{% static 'plugins/nprogress/nprogress.js' %}"></script> 
+    <script src="{% static 'dist/js/theme.js' %}"></script>
+
+  </body>
+</html>

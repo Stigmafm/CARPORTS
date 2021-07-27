@@ -1,0 +1,221 @@
+{% extends 'Base/base.html' %} {% load static %} 
+{% block title %} Runs {% endblock %} 
+
+{% block extrahead %}
+
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+
+    <style>
+        textarea {
+            resize: none; 
+        }
+    </style>
+{% endblock extrahead%}
+
+{% block content %}
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-3">
+                    <h1 class="titlesTemplates">Runs <small>Update</small></h1>
+                </div>                
+                <div class="col-sm-5">
+                    {% if cntxAsignedRuns %}
+                        <h5 class="titlesTemplates">Selected Run: <Strong>{{cntxRuns.RunNumber}}</Strong>&nbsp; Assigned Carports: <strong>{{cntxAsignedRuns}} </strong>de <strong>{{cntxRuns.NumberofCarports}}</strong></h5>
+                    {% endif %}
+                </div>
+                <div class="col-sm-4">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/index/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/conf/mainCorridas/">Runs</a></li>
+                        <li class="breadcrumb-item active">Update</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="container-fluid">
+            <!-- <form id="form_data" method="POST" class="form-horizontal">  -->
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Open Runs <small></small></h3>       
+                            <a style="float: right;" class="btn btn-success col-lg-2 col-md-2 col-sm-1 col-xs-1" id="btnAdd" href="/conf/mainCarports/?RunID={{cntxRuns.id}}"><i class="fa fa-plus-circle"></i></a>
+                    </div> 
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- <input id="input_selectedRun" type="text" value="{{cntxRuns.id}}"> -->
+                            <table id="tbl_materials" class="table table-bordered table-striped dataTable drt-inline">
+                                <thead>
+                                    <tr style="background-color: #163D54; font-size: 16px; color: #FFFFFF;">
+                                        <th>Carports</th>
+                                        <th>Width</th>
+                                        <th>Length</th>
+                                        <th>Heigth</th>                                        
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if cntxAsignedCarportsRuns %}
+                                        {% for carport in cntxAsignedCarportsRuns %}
+                                            <tr>
+                                                <td>{{carport.CarportName}}</td>
+                                                <td>{{carport.Width}}</td>
+                                                <td>{{carport.Length}}</td>   
+                                                <td>{{carport.Heigth}}</td>                                          
+                                                <td class="col-sm-1">
+                                                    <a class="btn btn-block btn-danger" data-toggle="modal" data-target="#DeleteCarportAlert-{{carport.id}}">
+                                                        <i class="fa fa-trash-alt"></i>
+                                                    </a>
+                                                    <div class="modal fade" id="DeleteCarportAlert-{{carport.id}}">
+                                                        <div class="modal-dialog modal-lg">
+                                                            <div class="modal-content" style="border-radius: 10px;">
+                                                                <div class="modal-header" style="background: #d9534f">
+                                                                    <h4 class="modal-title"style="color: white">ADVERTENCIA</h4>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true" style="color: white">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <h4>Are you sure you want to delete carport <strong style="color: #cb3234;">{{carport.CarportName}}</strong>?</h4>
+                                                                </div>
+                                                                <div class="modal-footer justify-content-between">
+                                                                    <button id="cancel-{{carport.id}}" type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                                                    <button id="delete-{{carport.id}}" type="button" class="btn btn-danger" value="{{carport.CarportID_id}}" data-dismiss="modal">Eliminar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>                                             
+                                            </tr>    
+                                        {% endfor %} 
+                                    {% endif %}              
+                                </tfoot>
+                            </table> 
+                        </div>
+                    </div>                 
+                    <div class="card-footer">                           
+                        <div style="float: right;">        
+                            &nbsp;<label id="lbl_Confirm"></label>
+                        </div>                      
+                        <!-- <div style="float:right;">       
+                            <button id="btn_saveCarport" onclick="downjspdf();" type="button" class="btn btn-success">Guardar</button>                 
+                        </div>    -->
+                    </div>                                    
+                </div>
+            <!-- </form> -->
+        </div>
+    </section>
+{% endblock content %} 
+
+{% block extrascript %}
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+
+<script> 
+
+// $("#select_Products").change(function(){
+//     $('.NotDisplay').css('display', 'block');
+//     // refreshCarport();
+// });
+
+// $("#Width").keyup(function(event){
+//     refreshCarport();
+// });
+
+// $("#Length").keyup(function(event){
+//     refreshCarport();
+// });
+
+// $("#Heigth").keyup(function(event){
+//     refreshCarport();
+// });
+{% if cntxAsignedCarportsRuns %}
+    {% for carport in cntxAsignedCarportsRuns %}
+        $("#delete-{{carport.id}}").click(function(){
+            deleteCarport($("#input_selectedRun").val());
+            // window.location = "/conf/mainCarports/";
+        });
+    {% endfor %} 
+{% endif %}  
+
+function deleteCarport(CarportID){
+    // console.log(btnID)
+    $.ajax({
+        type: "GET",
+        url: '/conf/mainCarports/deleteCarport',
+        data: {
+            'operationNo': 0,  
+            // 'RunID': RunID,
+            'CarportID': CarportID,
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+        },    
+        dataType: 'json',
+        success: function(cntxAjax) {  
+            if(cntxAjax.Status === 'Saved'){
+                toastr.success('Se eliminó exitosamente')
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+            }else{
+                toastr.error('No se realizaron cambios')
+            }
+        }  
+    });
+}
+
+
+// function refreshCarport(){
+//     $("#lbl_carports").replaceWith(`<label style="font-size: 30px;" id="lbl_carports">`+$("#select_Products option:selected").text()+`</label>`)
+//     $.ajax({
+//         type: "POST",
+//         url: '/conf/mainCarports/',
+//         data: {
+//             'operationNo': 1,  
+//             'ProductID': $("#select_Products option:selected").val(),
+//             'Width': $("#Width").val(),
+//             'Length':$("#Length").val(),
+//             'Heigth':$("#Heigth").val(),
+//             'csrfmiddlewaretoken': '{{ csrf_token }}',
+//         },    
+//         dataType: 'json',
+//         success: function(cntxAjax) {  
+//             $("#div_Materials").empty();
+//             cntxAjax.cntxProducts.forEach(function(cntxProducts){
+//                 if(cntxProducts.Size === '0'){
+//                     $("#div_Materials").append(`       
+//                         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">     
+//                             <label style="font-family: 'Roboto', sans-serif; font-size: 18px; font-weight: 300;">`+cntxProducts.Quantity+`&nbsp;<strong>`+cntxProducts.MName+`</strong></label>                     
+//                         </div>                     
+//                     `)
+//                 }else{
+//                     $("#div_Materials").append(`       
+//                         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">     
+//                             <label style="font-family: 'Roboto', sans-serif; font-size: 18px; font-weight: 300;">`+cntxProducts.Quantity+`&nbsp;<strong>`+cntxProducts.MName+` </strong>`+cntxProducts.Size+` ft</label>                     
+//                             <!-- <label style="font-family: 'Roboto', sans-serif; font-size: 18px; font-weight: 300;"><i class="fa fa-tools"></i>&nbsp;`+cntxProducts.MName+`: <strong>`+cntxProducts.Quantity+`</strong></label>   -->                                    
+//                         </div>                     
+//                     `)
+
+//                 }
+//             });            
+//         }  
+//     });
+// }
+
+
+// $('.select2bs4').select2({
+//     theme: 'bootstrap4',
+//     placeholder: "Seleccione... ",
+//     allowClear: true
+// })
+</script>
+{% endblock extrascript %}
+
+

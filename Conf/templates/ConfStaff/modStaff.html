@@ -1,0 +1,86 @@
+{% extends 'Base/base.html' %} {% load static %} 
+{% block title %} Modificar Personal {% endblock %} 
+
+{% block extrahead %}
+
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+
+    <style>
+        textarea {
+            resize: none; 
+        }
+    </style>
+{% endblock extrahead%}
+
+{% block content %}
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="titlesTemplates">Personal <small>Modificar</small></h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/index/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/conf/staff/">Personal</a></li>
+                        <li class="breadcrumb-item active">Modificar</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="container-fluid">
+            <form id="form_data" method="POST" class="form-horizontal"> 
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Personal <small>Configuración</small></h3>                                              
+                    </div> 
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">                        
+                                    <div class="form-group">
+                                        <label>Nombre</label>
+                                        <input type="text" class="form-control" placeholder="Name" name="Name" value="{{Name}}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Descripcion</label>
+                                        <textarea name="Description" id="Description" class="form-control" rows="5" placeholder="Ingrese descripcion" required>{{Description}}</textarea>
+                                    </div> 
+                                    <div class="icheck-success d-inline col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                        {% if not Block %}
+                                        <input type="checkbox" class="form-check-input" id="Active" name="Active">
+                                        {% endif %}
+                                        {% if Block %}
+                                        <input type="checkbox" class="form-check-input" id="Active" name="Active"checked> 
+                                        {% endif %}
+                                        <label class="form-check-label" for="Active">Activo</label>
+                                    </div>  
+                                </div>
+                            </div>  
+                        </div>   
+                    </div>                 
+                    <div class="card-footer">
+                        <div style="float:right;">          
+                            <a class="btn  btn-info" id="btnPrevious" href="/conf/staff/">Regresar</a>  
+                            <button type="submit" class="btn btn-success">Guardar</button>              
+                        </div>  
+                    </div>                                    
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock content %} 
+
+{% block extrascript %}
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+
+<script>     
+
+</script>
+{% endblock extrascript %}
+
+

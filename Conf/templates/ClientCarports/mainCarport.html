@@ -1,0 +1,364 @@
+{% extends 'Base/base.html' %} {% load static %} 
+{% block title %} Carports {% endblock %} 
+
+{% block extrahead %}
+
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+
+    <style>
+        textarea {
+            resize: none; 
+        }
+    </style>
+{% endblock extrahead%}
+
+{% block content %}
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-3">
+                    <h1 class="titlesTemplates">Carports <small>Add</small></h1>
+                </div>                
+                <div class="col-sm-5">
+                    {% if cntxRuns %}
+                        {% if cntxAsignedRuns == 0 %}
+                            <h5 class="titlesTemplates">Active Run: <Strong>{{cntxRuns.RunNumber}}</Strong>&nbsp; Assigned Carports: <strong>0 </strong> de <strong>{{cntxRuns.NumberofCarports}}</strong></h5>
+                        {% else %}
+                            <h5 class="titlesTemplates">Active Run: <Strong>{{cntxRuns.RunNumber}}</Strong>&nbsp; Assigned Carports: <strong>{{cntxAsignedRuns}} </strong> de <strong>{{cntxRuns.NumberofCarports}}</strong></h5>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col-sm-4">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/index/">Home</a></li>
+                        <li class="breadcrumb-item active">Carports</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <form method="POST" class="form-horizontal">
+        <section class="content col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <div class="container-fluid">
+                <!-- <form method="POST" class="form-horizontal">  -->
+                    {% csrf_token %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Customer <small>Configuration</small></h3> 
+                            <div style="float:right;">       
+                                <!-- <button id="bnt_ChooseAnotherRun" type="button" class="btn btn-info" >Choose Another Run</button>                 -->
+                            </div>                     
+                        </div> 
+                        <div class="card-body">
+                            <div class="row">                            
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">                     
+                                    <div class="form-group">                        
+                                        <div class="form-group">
+                                            <label for="customerName">Customer Name:</label>
+                                            <input id="customerName" name="customerName" type="text"  class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>  
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">                              
+                                    <div class="form-group">                        
+                                        <div class="form-group">
+                                            <label for="Address">Address:</label>
+                                            <input id="Address" name="Address" type="text" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>  
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">                                
+                                    <div class="form-group">                        
+                                        <div class="form-group">
+                                            <label for="City">City:</label>
+                                            <input id="City" name="City" type="text" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>  
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">                                
+                                    <div class="form-group">                        
+                                        <div class="form-group">
+                                            <label for="State">State:</label>
+                                            <input id="State" name="State" type="text" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">                                
+                                    <div class="form-group">                        
+                                        <div class="form-group">
+                                            <label for="Zip_Code">Zip Code:</label>
+                                            <input id="Zip_Code" name="Zip_Code" type="text" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">                                
+                                    <div class="form-group">                        
+                                        <div class="form-group">
+                                            <label for="Telephone">Telephone:</label>
+                                            <input id="Telephone" name="Telephone" type="text" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>   
+                        </div>                 
+                        <div class="card-footer">                        
+                            <div style="float:right;">       
+                                <button id="btn_Next" type="button" class="btn btn-primary" >Next</button>  
+                                <!-- <button name="saveFinish" value="1" type="submit" class="btn btn-success">Save and Finish</button>                  -->
+                            </div>   
+                        </div>                                    
+                    </div>
+                <!-- </form> -->
+            </div>
+        </section>
+        <section style="display: none;" class="NotDisplay content col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <div class="container-fluid">
+                <!-- <form method="POST" class="form-horizontal">  -->
+                    {% csrf_token %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Carports <small>Configuration</small></h3> 
+                            <div style="float:right;">       
+                                <button id="bnt_ChooseAnotherRun" type="button" class="btn btn-info" >Choose Another Run</button>                
+                            </div>                     
+                        </div> 
+                        <div class="card-body">
+                            <div class="row">
+                                <input style="display: none;" class="form-control" type="text" name="input_RunActive" id="input_RunActive" value="{{cntxRuns.id}}">
+                                <!-- <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <label>Active Runs:</label>
+                                    <select id="select_ActiveRun" name="select_Products" class="form-control select2bs4" style="width: 100%;" required>
+                                        <option value=""></option>
+                                        {% if cntxOpenRun %}
+                                            {% for run in cntxOpenRun %}
+                                                <option value="{{run.id}}">{{run.RunNumber}}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>  -->
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <label>Carports:</label>
+                                    <select id="select_Products" name="select_Products" class="form-control select2bs4" style="width: 100%;" required>
+                                        <option value=""></option>
+                                        {% if cntxProducts %}
+                                            {% for product in cntxProducts %}
+                                                <option value="{{product.id}}">{{product.Name}}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>  
+                                <div style="text-align: center;" class="col-lg-6 col-md-6 col-sm-12 col-xs-12"><br>
+                                    <label style="font-size: 30px;" id="lbl_carports"></label>
+                                </div>
+                                
+                                <div style="display: none;" class="NotDisplay col-lg-4 col-md-4 col-sm-12 col-xs-12"><br>                       
+                                    <div class="form-group">                        
+                                        <div class="form-group">
+                                            <label>Width</label>
+                                            <input id="Width" name="Width" type="number" value="12" onkeypress="return OnlyNumbers(event)" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>  
+                                <div style="display: none;" class="NotDisplay col-lg-4 col-md-4 col-sm-12 col-xs-12"><br>                              
+                                    <div class="form-group">                        
+                                        <div class="form-group">
+                                            <label>Length</label>
+                                            <input id="Length" name="Length" type="number" value="20" onkeypress="return OnlyNumbers(event)" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>  
+                                <div style="display: none;" class="NotDisplay col-lg-4 col-md-4 col-sm-12 col-xs-12"><br>                                 
+                                    <div class="form-group">                        
+                                        <div class="form-group">
+                                            <label>Heigth</label>
+                                            <input id="Heigth" name="Heigth" type="number" value="6" onkeypress="return OnlyNumbers(event)" class="form-control"  required>
+                                        </div>
+                                    </div>
+                                </div>  
+                                <div style="display: none;" class="NotDisplay col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label>Gauge:</label>
+                                    <select id="Gauge" name="Gauge" class="form-control select2bs4" style="width: 100%;">
+                                        <option value="14">14</option>
+                                        <option value="12">12</option>                                    
+                                    </select>
+                                </div>  
+                                <div style="display: none;" class="NotDisplay col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label>Certificacion:</label>
+                                    <select id="Certification" name="Certification" class="form-control select2bs4" style="width: 100%;">
+                                        <option value="35/140">35/140</option>                                   
+                                    </select>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><br>                                 
+                                    <div class="row"  id="div_Materials">  
+                                    </div>
+                                </div> 
+                            </div>   
+                        </div>                 
+                        <div class="card-footer">                        
+                            <div style="float:right;">       
+                                <button name="saveOther" value="1" type="submit" class="btn btn-info" >Save and Add Another</button>  
+                                <button name="saveFinish" value="1" type="submit" class="btn btn-success">Save and Finish</button>                 
+                            </div>   
+                        </div>                                    
+                    </div>
+                <!-- </form> -->
+            </div>
+        </section>
+    </form>
+    <div class="modal fade" id="mdlSelectRun" data-backdrop="static">
+        <div class="modal-dialog ">
+            <div class="modal-content" style="border-radius: 10px;">
+                <div class="modal-header" style="background: #163D54">
+                    <h4 class="modal-title"style="color: white">Choose a Run</h4>
+                    <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="color: white">&times;</span>
+                    </button> -->
+                </div>
+                <div class="modal-body">
+                    <div style="text-align: center;" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <label>Active Runs:</label>
+                        <select id="select_ActiveRun" name="select_Products" class="form-control select2bs4" style="width: 100%;" required>
+                            <option value=""></option>
+                            {% if cntxOpenRun %}
+                                {% for run in cntxOpenRun %}
+                                    <option value="{{run.id}}">{{run.RunNumber}}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="btnFinishRun-{{run.id}}" type="button" class="btn btn-primary" data-dismiss="modal">Terminar Corrida</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %} 
+
+{% block extrascript %}
+<!-- <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script> -->
+<script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+
+<script> 
+
+$(document).ready(function () {
+    {% if cntxOpenRun %}
+        $("#mdlSelectRun").modal('show');
+    {% endif %}
+});
+
+$("#bnt_ChooseAnotherRun").click(function(){
+    window.location = "/conf/mainCarports/";
+});
+
+$("#select_ActiveRun").change(function(){
+    window.location = "/conf/mainCarports/?RunID="+$("#select_ActiveRun").val();
+});
+
+$("#btn_Next").click(function(){
+    $('.NotDisplay').css('display', 'block');
+});
+
+// $("#select_Products").change(function(){
+//     $('.NotDisplay').css('display', 'block');
+//     // refreshCarport();
+// });
+
+// $("#Width").keyup(function(event){
+//     refreshCarport();
+// });
+
+// $("#Length").keyup(function(event){
+//     refreshCarport();
+// });
+
+// $("#Heigth").keyup(function(event){
+//     refreshCarport();
+// });
+
+
+// function saveCarport(){
+//     // console.log(btnID)
+//     $.ajax({
+//         type: "POST",
+//         url: '/conf/mainCarports/',
+//         data: {
+//             'operationNo': 0,  
+//             // 'btnID': btnID,
+//             'RunActive': $("#input_RunActive").val(),
+//             'ProductID': $("#select_Products option:selected").val(),
+//             'Width': $("#Width").val(),
+//             'Length':$("#Length").val(),
+//             'Heigth':$("#Heigth").val(),
+//             'Gauge': $("#Gauge option:selected").val(),
+//             'csrfmiddlewaretoken': '{{ csrf_token }}',
+//         },    
+//         dataType: 'json',
+//         success: function(cntxAjax) {  
+//             if(cntxAjax.Status === 'Saved'){
+//                 toastr.success('Se guardó exitosamente')
+//                 setTimeout(function() {
+//                     location.reload();
+//                 }, 2000);
+//             }else{
+//                 toastr.error('No se realizaron cambios')
+//             }
+//         }  
+//     });
+// }
+
+
+// function refreshCarport(){
+//     $("#lbl_carports").replaceWith(`<label style="font-size: 30px;" id="lbl_carports">`+$("#select_Products option:selected").text()+`</label>`)
+//     $.ajax({
+//         type: "POST",
+//         url: '/conf/mainCarports/',
+//         data: {
+//             'operationNo': 1,  
+//             'ProductID': $("#select_Products option:selected").val(),
+//             'Width': $("#Width").val(),
+//             'Length':$("#Length").val(),
+//             'Heigth':$("#Heigth").val(),
+//             'csrfmiddlewaretoken': '{{ csrf_token }}',
+//         },    
+//         dataType: 'json',
+//         success: function(cntxAjax) {  
+//             $("#div_Materials").empty();
+//             cntxAjax.cntxProducts.forEach(function(cntxProducts){
+//                 if(cntxProducts.Size === '0'){
+//                     $("#div_Materials").append(`       
+//                         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">     
+//                             <label style="font-family: 'Roboto', sans-serif; font-size: 18px; font-weight: 300;">`+cntxProducts.Quantity+`&nbsp;<strong>`+cntxProducts.MName+`</strong></label>                     
+//                         </div>                     
+//                     `)
+//                 }else{
+//                     $("#div_Materials").append(`       
+//                         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">     
+//                             <label style="font-family: 'Roboto', sans-serif; font-size: 18px; font-weight: 300;">`+cntxProducts.Quantity+`&nbsp;<strong>`+cntxProducts.MName+` </strong>`+cntxProducts.Size+` ft</label>                     
+//                             <!-- <label style="font-family: 'Roboto', sans-serif; font-size: 18px; font-weight: 300;"><i class="fa fa-tools"></i>&nbsp;`+cntxProducts.MName+`: <strong>`+cntxProducts.Quantity+`</strong></label>   -->                                    
+//                         </div>                     
+//                     `)
+
+//                 }
+//             });            
+//         }  
+//     });
+// }
+
+
+$('.select2bs4').select2({
+    theme: 'bootstrap4',
+    placeholder: "Choose... ",
+    allowClear: true
+})
+</script>
+{% endblock extrascript %}
+
+

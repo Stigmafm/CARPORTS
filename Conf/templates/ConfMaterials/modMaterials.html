@@ -1,0 +1,137 @@
+{% extends 'Base/base.html' %} {% load static %} 
+{% block title %} Modificar Materiales {% endblock %} 
+
+{% block extrahead %}
+
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+
+    <style>
+        textarea {
+            resize: none; 
+        }
+    </style>
+{% endblock extrahead%}
+
+{% block content %}
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="titlesTemplates">Materiales <small>Modificar</small></h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/index/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/conf/materials/">Materiales</a></li>
+                        <li class="breadcrumb-item active">Modificar</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="container-fluid">
+            <form id="form_data" method="POST" class="form-horizontal"> 
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Materiales <small>Configuración</small></h3>                                             
+                    </div> 
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">                        
+                                    <div class="form-group">
+                                        <label>Nombre</label>
+                                        <input type="text" class="form-control" placeholder="Name" name="Name" value="{{Name}}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Descripcion</label>
+                                        <textarea name="Description" id="Description" class="form-control" rows="5" placeholder="Ingrese descripcion" required>{{Description}}</textarea>
+                                    </div>
+                                    <div class="icheck-success  col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        {% if not Dependent %}
+                                        <input type="checkbox" class="form-check-input" id="Dependent" name="Dependent">
+                                        {% endif %}
+                                        {% if Dependent %}
+                                        <input type="checkbox" class="form-check-input" id="Dependent" name="Dependent" checked>
+                                        {% endif %}
+                                        <label class="form-check-label" for="Dependent">Dependiente</label>
+                                    </div>
+                                    {% if not Dependent %}
+                                    <div id="div_select_TypeSize" style="display: none;" class="form-group">
+                                        <label>Materiales:</label>
+                                        <select id="select_TypeSize" name="select_TypeSize" class="form-control select2bs4" style="width: 100%;">
+                                            <option value=""></option> 
+                                            <option value="W">Width</option>   
+                                            <option value="L">Length</option> 
+                                            <option value="H">Heigth</option>                                            
+                                        </select>
+                                    </div> 
+                                    {% endif %}
+                                    {% if Dependent %}                                     
+                                    <div id="div_select_TypeSize" class="form-group">
+                                        <label>Materiales:</label>
+                                        <select id="select_TypeSize" name="select_TypeSize" class="form-control select2bs4" style="width: 100%;">
+                                            <option value=""></option> 
+                                            <option value="W">Width</option>   
+                                            <option value="L">Length</option> 
+                                            <option value="H">Heigth</option>                                            
+                                        </select>
+                                    </div> 
+                                    {% endif %}
+
+                                    <div class="icheck-success d-inline col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                        {% if not Block %}
+                                        <input type="checkbox" class="form-check-input" id="Active" name="Active">
+                                        {% endif %}
+                                        {% if Block %}
+                                        <input type="checkbox" class="form-check-input" id="Active" name="Active"checked> 
+                                        {% endif %}
+                                        <label class="form-check-label" for="Active">Activo</label>
+                                    </div>  
+                                </div>
+                            </div>  
+                        </div>   
+                    </div>                 
+                    <div class="card-footer">
+                        <div style="float:right;">       
+                            <a class="btn  btn-info" id="btnPrevious" href="/conf/materials/">Regresar</a>  
+                            <button type="submit" class="btn btn-success">Guardar</button>                 
+                        </div>   
+                    </div>                                    
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock content %} 
+
+{% block extrascript %}
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+
+<script>     
+    $('.select2bs4').select2({
+        theme: 'bootstrap4',
+        placeholder: " ",
+        allowClear: true
+    }) 
+
+    $('#Dependent').change(function(){
+        if ($(this).is(':checked')) {
+            $('#div_select_TypeSize').css('display', 'block');
+        }else{
+            $('#div_select_TypeSize').css('display', 'none');
+        }            
+    }); 
+
+    $('#select_TypeSize').val('{{Sizes}}');
+    $('#select_TypeSize').trigger('change');
+</script>
+{% endblock extrascript %}
+
+

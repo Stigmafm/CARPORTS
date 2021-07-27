@@ -1,0 +1,193 @@
+{% extends 'Base/base.html' %} {% load static %} 
+{% block title %} Contraseña Usuarios {% endblock %} 
+
+{% block extrahead %}
+
+<!-- <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}"> -->
+
+    <style>
+        .warn {
+            border: 2px solid orange;
+        }
+    </style>
+{% endblock extrahead%}
+
+{% block content %}
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="titlesTemplates">Usuarios <small>Cambiar Contraseña</small></h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/index/">Home</a></li>
+                        <li class="breadcrumb-item "><a href="/users/">Usuarios</a></li>
+                        <li class="breadcrumb-item "><a href="/users/mod/{{us.id}}">Modificar</a></li>
+                        <li class="breadcrumb-item active">Contraseña</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <section class="content col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="container-fluid">
+            <form id="form_data" method="POST" enctype="multipart/form-data" class="form-horizontal"> {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Usuarios <small>Configuración</small></h3>                      
+                    </div> 
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">                        
+                                    <div class="form-group">
+                                        <label>Usuario</label>
+                                        <input type="text" class="form-control" placeholder="User" name="username" value="{{username}}" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Nombre</label>
+                                        <input type="text" class="form-control" name="first_name" placeholder="Nombre" value="{{first_name}} {{last_name}}" disabled>
+                                    </div>  
+                                    <div class="form-group">
+                                        <label for="password1">Contraseña</label>
+                                        <label id="lbl_warning"></label>
+                                        <div class="input-group">
+                                            <input id="password1" type="password" class="form-control password1" placeholder="Password"  name="password1" required>
+                                            <div class="input-group-append">
+                                                <span class="input-group-btn">
+                                                    <button type="button" id="see" class="btn btn-default" style="border-radius:3px; "><span id="activate" class="fa fa-eye"></span><span id="block" style="display: none" class="fa fa-eye-slash"></span></button>
+                                                </span>
+                                            </div>                                            
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password2">Confirmar Contraseña</label>
+                                        <div class="input-group">
+                                            <input id="password2" type="password" class="form-control password2" placeholder="Confirm Password"  name="password2" required>
+                                            <div class="input-group-append">
+                                                <span class="input-group-btn">
+                                                    <button type="button" id="see2" class="btn btn-default" style="border-radius:3px; "><span id="activate2" class="fa fa-eye"></span><span id="block2" style="display: none" class="fa fa-eye-slash"></span></button>
+                                                </span>
+                                            </div>                                            
+                                        </div>
+                                    </div>                                   
+                                </div>
+                            </div> 
+                        </div>   
+                    </div>                 
+                    <div class="card-footer">
+                        <div style="float:right;">              
+                            <a class="btn btn-info" id="btnPrevious" href="/users/mod/{{us.id}}">Regresar</a>  
+                            <button type="submit" onClick="valida(this.form.password1.value)" class="btn btn-success">Guardar</button>          
+                        </div>  
+                    </div>                                    
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock content %} 
+
+{% block extrascript %}
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+
+<script>
+
+    function valida(tx) {
+        var nMay = 0,
+            nMin = 0,
+            nNum = 0
+        var t1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        var t2 = "abcdefghijklmnopqrstuvwxyz"
+        var t3 = "0123456789"
+        for (i = 0; i < tx.length; i++) {
+            if (t1.indexOf(tx.charAt(i)) != -1) {
+                nMay++
+            }
+            if (t2.indexOf(tx.charAt(i)) != -1) {
+                nMin++
+            }
+            if (t3.indexOf(tx.charAt(i)) != -1) {
+                nNum++
+            }
+        }
+
+        if (nMay > 0 && nMin > 0 && nNum > 0) {
+            var password1 = document.getElementById("password1").value;
+            var password2 = document.getElementById("password2").value;
+
+            if (password1 != password2) {
+                $('#password1').addClass("warn");
+                $('#password2').addClass("warn");
+                $('#lbl_warning').replaceWith(`<label id="lbl_warning" class="label bg-warning msg_password" style="float:right; font-size:100%;"><i class="fa fa-exclamation-triangle"></i> Las contraseñas no coinciden</label>`);
+                //$('#label_password2').after(`<label class="label label-warning msg_password" style="float:right; font-size:100%;"><i class="fa fa-exclamation-triangle"></i></label>`);
+                $(document).ready(function() {
+                    setTimeout(function() {
+                        $('#password1').removeClass('warn');
+                        $('#password2').removeClass('warn');
+                        $('.msg_password').fadeOut(1500);
+                    }, 2000);
+                });
+            }else{
+                $("#form_data").submit();
+            }
+        }else{
+            $('#password1').addClass("warn");
+            $('#password2').addClass("warn");
+            $('#lbl_warning').replaceWith(`<label id="lbl_warning" class="label bg-warning msg_password" style="float:right; font-size:100%;"><i class="fa fa-exclamation-triangle"></i> La contraseña es muy sencilla</label>`);
+            //$('#label_password2').after(`<label class="label label-warning msg_password" style="float:right; font-size:100%;"><i class="fa fa-exclamation-triangle"></i></label>`);
+            $(document).ready(function() {
+                setTimeout(function() {
+                    $('#password1').removeClass('warn');
+                    $('#password2').removeClass('warn');
+                    $('.msg_password').fadeOut(1500);
+                }, 2000);
+            });
+        }
+    }
+
+    var conteo = 0
+    var conteo2 = 0
+    $("#see").click(function() {
+        see = document.getElementById("activate");
+        nse = document.getElementById("block");
+        if (conteo == 0) {
+            conteo = 1;
+            $('#password1').removeAttr("type", "password");
+            $("#password1").prop("type", "text");
+            see.style.display = 'none'
+            nse.style.display = ''
+        } else {
+            conteo = 0;
+            $('#password1').removeAttr("type", "text");
+            $("#password1").prop("type", "password");
+            see.style.display = ''
+            nse.style.display = 'none'
+        }
+    });
+
+    $("#see2").click(function() {
+        see2 = document.getElementById("activate2");
+        nse2 = document.getElementById("block2");
+        if (conteo2 == 0) {
+            conteo2 = 1;
+            $('#password2').removeAttr("type", "password");
+            $("#password2").prop("type", "text");
+            see2.style.display = 'none'
+            nse2.style.display = ''
+        } else {
+            conteo2 = 0;
+            $('#password2').removeAttr("type", "text");
+            $("#password2").prop("type", "password");
+            see2.style.display = ''
+            nse2.style.display = 'none'
+        }
+    });
+
+</script>
+{% endblock extrascript %}
+
+
